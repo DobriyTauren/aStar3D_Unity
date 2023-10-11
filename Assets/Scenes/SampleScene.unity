@@ -303,7 +303,7 @@ Transform:
   m_GameObject: {fileID: 963194225}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3, y: 2.85, z: -7}
+  m_LocalPosition: {x: 7, y: 10, z: -15}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -343,7 +343,7 @@ MonoBehaviour:
   endX: 4
   endY: 4
   endZ: 4
-  MatrixSize: 5
+  MatrixSize: 16
 --- !u!4 &1832233063
 Transform:
   m_ObjectHideFlags: 0
