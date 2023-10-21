@@ -4,9 +4,9 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Unity.VisualScripting;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+
+using static PathfindingMethods;
 
 public class BlockSpawnController : MonoBehaviour
 {
@@ -17,7 +17,9 @@ public class BlockSpawnController : MonoBehaviour
     public int endY = 5;
     public int endZ = 5;
 
-    private static int _limitMultiplayer = 4;
+    private const int GLOBAL_NODES_LIMIT = 16384;
+
+    private static int _limitMultiplayer = 8;
 
     public int MatrixSize = 7;
 
@@ -196,6 +198,12 @@ public class BlockSpawnController : MonoBehaviour
             int[] dz = { 0, 0, 0, 0, -1, 1 };
 
             int nodesCount = width * height * depth;
+            int nodesLimit = nodesCount * _limitMultiplayer;
+
+            if (nodesLimit > GLOBAL_NODES_LIMIT)
+            {
+                nodesLimit = GLOBAL_NODES_LIMIT;
+            }
 
             // Инициализируем кучу для открытого списка
             MinHeap openList = new MinHeap();
@@ -203,7 +211,7 @@ public class BlockSpawnController : MonoBehaviour
 
             List<Node3D> closedList = new List<Node3D>();
 
-            while (openList.Count > 0 && !IsLooping(openList.Count, closedList.Count, nodesCount))
+            while (openList.Count > 0 && !IsLooping(openList.Count, closedList.Count, nodesLimit))
             {
                 Node3D current = openList.ExtractMin();
                 closedList.Add(current);
@@ -251,36 +259,6 @@ public class BlockSpawnController : MonoBehaviour
             // Путь не найден
             return null;
         }
-
-        private static bool IsLooping(int openListCount, int closedListCount, int nodesCount)
-        {
-            if (openListCount + closedListCount > nodesCount * _limitMultiplayer)
-            {
-                return true;
-            }
-
-            return false;
-        }
-
-        private static List<Node3D> ReconstructPath(Node3D node)
-        {
-            List<Node3D> path = new List<Node3D>();
-
-            while (node != null)
-            {
-                path.Add(node);
-                node = node.Parent;
-            }
-
-            path.Reverse();
-            return path;
-        }
-
-        private static bool IsInsideGrid(int x, int y, int z, int width, int height, int depth)
-        {
-            return x >= 0 && x < width && y >= 0 && y < height && z >= 0 && z < depth;
-        }
-
 
         public class MinHeap
         {
@@ -381,6 +359,12 @@ public class BlockSpawnController : MonoBehaviour
             int[] dz = { 0, 0, 0, 0, -1, 1 };
 
             int nodesCount = height * width * depth;
+            int nodesLimit = nodesCount * _limitMultiplayer;
+
+            if (nodesLimit > GLOBAL_NODES_LIMIT)
+            {
+                nodesLimit = GLOBAL_NODES_LIMIT;
+            }
 
             // Инициализируем бинарное дерево
             BinarySearchTree openList = new BinarySearchTree();
@@ -389,7 +373,7 @@ public class BlockSpawnController : MonoBehaviour
             List<Node3D> closedList = new List<Node3D>();
             object lockObject = new object(); // Объект для блокировки доступа к общим данным
 
-            while (openList.Count > 0 && !IsLooping(openList.Count, closedList.Count, nodesCount))
+            while (openList.Count > 0 && !IsLooping(openList.Count, closedList.Count, nodesLimit))
             {
                 Node3D current = openList.ExtractMin();
 
@@ -456,35 +440,6 @@ public class BlockSpawnController : MonoBehaviour
 
             return null;
         }
-
-        private static List<Node3D> ReconstructPath(Node3D node)
-        {
-            List<Node3D> path = new List<Node3D>();
-
-            while (node != null)
-            {
-                path.Add(node);
-                node = node.Parent;
-            }
-
-            path.Reverse();
-            return path;
-        }
-
-        private static bool IsInsideGrid(int x, int y, int z, int width, int height, int depth)
-        {
-            return x >= 0 && x < width && y >= 0 && y < height && z >= 0 && z < depth;
-        }
-
-        private static bool IsLooping(int openListCount, int closedListCount, int nodesCount)
-        {
-            if (openListCount + closedListCount > nodesCount * _limitMultiplayer)
-            {
-                return true;
-            }
-
-            return false;
-        }
     }
 
     public class AStar3D
@@ -496,6 +451,12 @@ public class BlockSpawnController : MonoBehaviour
             int depth = grid.GetLength(2);
 
             int nodesCount = width * height * depth;
+            int limitNodes = nodesCount * _limitMultiplayer;
+
+            if (limitNodes > GLOBAL_NODES_LIMIT)
+            {
+                limitNodes = GLOBAL_NODES_LIMIT;
+            }
 
             List<Node3D> openList = new List<Node3D>();
             List<Node3D> closedList = new List<Node3D>();
@@ -507,7 +468,7 @@ public class BlockSpawnController : MonoBehaviour
 
             openList.Add(start);
 
-            while (openList.Count > 0 && !IsLooping(openList.Count, closedList.Count, nodesCount))
+            while (openList.Count > 0 && !IsLooping(openList.Count, closedList.Count, limitNodes))
             {
                 Node3D current = openList[0];
 
@@ -729,6 +690,12 @@ public class BlockSpawnController : MonoBehaviour
             int depth = grid.GetLength(2);
 
             int nodesCount = width * height * depth;
+            int nodesLimit = nodesCount * _limitMultiplayer;
+
+            if (nodesLimit > GLOBAL_NODES_LIMIT)
+            {
+                nodesLimit = GLOBAL_NODES_LIMIT;
+            }
 
             List<Node3D> openList = new List<Node3D>();
             List<Node3D> closedList = new List<Node3D>();
@@ -1070,41 +1037,10 @@ public class BlockSpawnController : MonoBehaviour
         new int[] { 0, 0, 1 }
     };
         }
-
-        private static List<Node3D> ReconstructPath(Node3D node)
-        {
-            List<Node3D> path = new List<Node3D>();
-
-            while (node != null)
-            {
-                path.Add(node);
-                node = node.Parent;
-            }
-
-            path.Reverse();
-            return path;
-        }
-
-        private static bool IsInsideGrid(int x, int y, int z, int width, int height, int depth)
-        {
-            return x >= 0 && x < width && y >= 0 && y < height && z >= 0 && z < depth;
-        }
-
-        private static bool IsLooping(int openListCount, int closedListCount, int nodesCount)
-        {
-            if (openListCount + closedListCount > nodesCount * _limitMultiplayer)
-            {
-                return true;
-            }
-
-            return false;
-        }
     }
 
     private void PathfindingStart()
     {
-
-
         FindPathAlgorithm[] findPathAlgorithms = new FindPathAlgorithm[]
         {
             AStar3D_Heap.FindPath,

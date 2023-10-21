@@ -303,7 +303,7 @@ Transform:
   m_GameObject: {fileID: 963194225}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 7, y: 10, z: -15}
+  m_LocalPosition: {x: 7, y: 7.5, z: -15}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -340,9 +340,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   spawnEntity: {fileID: 6439722859607092418, guid: f7b8a92aafff47949b911cfd4e2d77e6, type: 3}
   spawnPathEntity: {fileID: 34047978814642502, guid: 1f6a6787d0aa20b408bc6a977cda288b, type: 3}
-  endX: 4
-  endY: 4
-  endZ: 4
+  endX: 14
+  endY: 14
+  endZ: 14
   MatrixSize: 16
 --- !u!4 &1832233063
 Transform:
